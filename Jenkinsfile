@@ -7,10 +7,6 @@ pipeline {
         CLOUDFRONT_ID = 'E2BPJRH3GUIOSG'
     }
 
-    tools {
-        nodejs 'nodejs'   // make sure NodeJS is configured in Jenkins (Manage Jenkins → Global Tool Configuration)
-    }
-
     stages {
         stage('Checkout Code') {
             steps {
@@ -22,7 +18,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing npm dependencies...'
-                sh 'npm ci'
+                sh 'npm ci || npm install'
             }
         }
 
