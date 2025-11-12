@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FaCloudUploadAlt, FaImages, FaUserCircle } from "react-icons/fa";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  FaCloudUploadAlt,
+  FaImages,
+  FaUserCircle,
+  FaTrashAlt,
+} from "react-icons/fa";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import "./App.css";
 
 function App() {
@@ -48,9 +61,28 @@ function App() {
     }
   };
 
+  // Delete photo
+  const deletePhoto = async (id) => {
+    const confirmDelete = window.confirm(
+      "🗑️ Are you sure you want to delete this photo?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`${BACKEND_URL}/photos/${id}`);
+      alert("🗑️ Photo deleted successfully!");
+      fetchPhotos(); // refresh gallery
+    } catch (err) {
+      console.error("Error deleting photo:", err);
+      alert("❌ Failed to delete photo.");
+    }
+  };
+
   // Chart data
   const uploadData = photos.reduce((acc, photo) => {
-    const month = new Date(photo.created_at).toLocaleString("default", { month: "short" });
+    const month = new Date(photo.created_at).toLocaleString("default", {
+      month: "short",
+    });
     const found = acc.find((d) => d.month === month);
     if (found) found.uploads += 1;
     else acc.push({ month, uploads: 1 });
@@ -90,7 +122,9 @@ function App() {
           <div className="flex items-center gap-6">
             <FaUserCircle className="text-6xl text-white drop-shadow-md" />
             <div>
-              <h1 className="text-3xl font-bold text-white drop-shadow">Pranit Potsure</h1>
+              <h1 className="text-3xl font-bold text-white drop-shadow">
+                Pranit Potsure
+              </h1>
               <p className="text-white/80">📍 India | Cloud Enthusiast</p>
             </div>
           </div>
@@ -100,11 +134,15 @@ function App() {
               <p className="text-sm text-white/80">Posts</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-white">{120 + photos.length}</p>
+              <p className="text-2xl font-bold text-white">
+                {120 + photos.length}
+              </p>
               <p className="text-sm text-white/80">Followers</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-white">{photos.length * 2}</p>
+              <p className="text-2xl font-bold text-white">
+                {photos.length * 2}
+              </p>
               <p className="text-sm text-white/80">Likes</p>
             </div>
           </div>
@@ -135,23 +173,29 @@ function App() {
           {photos.map((p) => (
             <div
               key={p.id}
-              className="relative group rounded-xl overflow-hidden shadow-lg border border-white/20 hover:scale-105 transition-transform cursor-pointer"
-              onClick={() => setShowMeta(p)}
+              className="relative group rounded-xl overflow-hidden shadow-lg border border-white/20 hover:scale-105 transition-transform"
             >
               <img
                 src={p.url}
                 alt={p.filename}
-                className="w-full h-64 object-cover group-hover:opacity-90"
+                className="w-full h-64 object-cover group-hover:opacity-90 cursor-pointer"
+                onClick={() => setShowMeta(p)}
               />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white font-medium transition">
-                View Details
-              </div>
+
+              {/* Delete button */}
+              <button
+                onClick={() => deletePhoto(p.id)}
+                className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition"
+                title="Delete photo"
+              >
+                <FaTrashAlt />
+              </button>
             </div>
           ))}
         </div>
       </main>
 
-      {/* Modal */}
+      {/* Modal for metadata */}
       {showMeta && (
         <div
           onClick={() => setShowMeta(null)}
@@ -161,14 +205,21 @@ function App() {
             onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-2xl shadow-2xl p-6 w-[400px] max-w-[90%] text-gray-800"
           >
-            <h2 className="text-2xl font-bold mb-4 text-center">📸 Photo Details</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">
+              📸 Photo Details
+            </h2>
             <img
               src={showMeta.url}
               alt={showMeta.filename}
               className="w-full h-64 object-cover rounded-xl mb-4"
             />
-            <p><strong>Filename:</strong> {showMeta.filename}</p>
-            <p><strong>Uploaded:</strong> {new Date(showMeta.created_at).toLocaleString()}</p>
+            <p>
+              <strong>Filename:</strong> {showMeta.filename}
+            </p>
+            <p>
+              <strong>Uploaded:</strong>{" "}
+              {new Date(showMeta.created_at).toLocaleString()}
+            </p>
             <p>
               <strong>URL:</strong>{" "}
               <a
