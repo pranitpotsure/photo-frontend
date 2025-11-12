@@ -125,7 +125,7 @@ function App() {
               <h1 className="text-3xl font-bold text-white drop-shadow">
                 Pranit Potsure
               </h1>
-              <p className="text-white/80">📍 India | Cloud Enthusiast</p>
+              <p className="text-white/80">📍 India | Cloud and DevOps Enthusiast</p>
             </div>
           </div>
           <div className="flex items-center justify-center gap-10 mt-6 md:mt-0">
